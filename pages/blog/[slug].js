@@ -1,67 +1,66 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-import marked from "marked";
-import Link from "next/link";
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import marked from 'marked';
+import Link from 'next/link';
 
 export default function PostPage({
-  frontmatter: { title, date, cover_image },
-  slug,
-  content,
+	frontmatter: { title, date, cover_image },
+	slug,
+	content,
 }) {
-  return (
-    <>
-      <Link href="/">
-        <a className="btn btn-black">Go Back</a>
-      </Link>
-      <div className="card card-page">
-        <h1 className="post-title">{title}</h1>
-        <div className="post-date">Posted on {date}</div>
-        <img src={cover_image} alt="" />
-        <div className="post-body">
-          <div dangerouslySetInnerHTML={{ __html: marked(content) }}></div>
-        </div>
-      </div>
-    </>
-  );
+	return (
+		<>
+			<Link href='/'>
+				<a className='btn btn-black'>Go Back</a>
+			</Link>
+			<div className='card card-page'>
+				<h1 className='post-title'>{title}</h1>
+				<div className='post-date'>Posted on {date}</div>
+				<img src={cover_image} alt='' />
+				<div className='post-body'>
+					<div dangerouslySetInnerHTML={{ __html: marked(content) }}></div>
+				</div>
+			</div>
+		</>
+	);
 }
 
 export function getStaticPaths() {
-  try{
-    const files = fs.readdirSync(path.join("posts"));
-    const paths = files.map((filename) => ({
-      params: {
-        slug: filename.replace(".md", ""),
-      },
-    }));
-  
-    return {
-      paths,
-      fallback: false,
-    };
-  }
-  catch{
-    console.log(error);
-    return {
-      params:{ slug: " "},
-      fallback:false
-    }
-  }
+	try {
+		const files = fs.readdirSync(path.join('posts'));
+		const paths = files.map((filename) => ({
+			params: {
+				slug: filename.replace('.md', ''),
+			},
+		}));
+
+		return {
+			paths,
+			fallback: false,
+		};
+	} catch {
+		console.log(error);
+		return {
+			params: { slug: ' ' },
+			fallback: false,
+		};
+	}
 }
 
 export function getStaticProps({ params: { slug } }) {
-  const markdownWithMeta = fs.readFileSync(
-    path.join('posts', slug + '.md'),
-    'utf-8'
-  );
+	const markdownWithMeta = fs.readFileSync(
+		path.join('posts', slug + '.md'),
+		'utf-8',
+	);
 
-  const { data: frontmatter, content } = matter(markdownWithMeta);
+	const { data: frontmatter, content } = matter(markdownWithMeta);
 
-  return {
-    props: {
-      frontmatter,
-      slug,
-      content,
-    },
-  };
+	return {
+		props: {
+			frontmatter,
+			slug,
+			content,
+		},
+	};
 }
